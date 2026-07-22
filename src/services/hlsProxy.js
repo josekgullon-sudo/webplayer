@@ -1,23 +1,39 @@
 const crypto = require('node:crypto');
 const config = require('../config');
 
-// Los segmentos pueden servirse desde CDNs distintos al host de la lista, asi que
-// en vez de una lista de hosts permitidos firmamos cada URL que generamos nosotros:
-// solo se hace de proxy de URLs salidas de un m3u8 que hemos descargado.
-function sign(url) {
-  return crypto.createHmac('sha256', config.sessionSecret).update(url).digest('base64url');
+// El navegador nunca debe ver los hosts reales (panel ni CDN). En vez de pasar la
+// URL destino en la query, se cifra con AES-256-GCM: el cliente solo maneja un
+// token opaco, y el GCM garantiza ademas que nadie pueda fabricar uno valido.
+const KEY = crypto.createHash('sha256').update(config.sessionSecret).digest();
+const IV_LEN = 12;
+const TAG_LEN = 16;
+
+function seal(url) {
+  const iv = crypto.randomBytes(IV_LEN);
+  const cipher = crypto.createCipheriv('aes-256-gcm', KEY, iv);
+  const enc = Buffer.concat([cipher.update(url, 'utf8'), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), enc]).toString('base64url');
 }
 
-function verify(url, signature) {
-  if (typeof signature !== 'string' || signature.length === 0) return false;
-  const expected = Buffer.from(sign(url));
-  const given = Buffer.from(signature);
-  return expected.length === given.length && crypto.timingSafeEqual(expected, given);
+function unseal(token) {
+  if (typeof token !== 'string' || token.length === 0) return null;
+  try {
+    const buf = Buffer.from(token, 'base64url');
+    if (buf.length <= IV_LEN + TAG_LEN) return null;
+    const decipher = crypto.createDecipheriv('aes-256-gcm', KEY, buf.subarray(0, IV_LEN));
+    decipher.setAuthTag(buf.subarray(IV_LEN, IV_LEN + TAG_LEN));
+    const dec = Buffer.concat([
+      decipher.update(buf.subarray(IV_LEN + TAG_LEN)),
+      decipher.final(),
+    ]);
+    return dec.toString('utf8');
+  } catch {
+    return null;
+  }
 }
 
 function proxyPath(uri, baseUrl) {
-  const absolute = new URL(uri, baseUrl).toString();
-  return `/stream/seg?u=${encodeURIComponent(absolute)}&s=${sign(absolute)}`;
+  return `/stream/seg?t=${seal(new URL(uri, baseUrl).toString())}`;
 }
 
 function rewritePlaylist(playlistText, playlistUrl) {
@@ -25,10 +41,12 @@ function rewritePlaylist(playlistText, playlistUrl) {
     const trimmed = line.trim();
     if (!trimmed) return line;
     if (trimmed.startsWith('#')) {
+      // EXT-X-SESSION-DATA puede delatar el software del panel: se elimina.
+      if (trimmed.startsWith('#EXT-X-SESSION-DATA')) return null;
       return line.replace(/URI="([^"]+)"/g, (m, uri) => `URI="${proxyPath(uri, playlistUrl)}"`);
     }
     return proxyPath(trimmed, playlistUrl);
-  }).join('\n');
+  }).filter((line) => line !== null).join('\n');
 }
 
-module.exports = { rewritePlaylist, sign, verify };
+module.exports = { rewritePlaylist, seal, unseal };

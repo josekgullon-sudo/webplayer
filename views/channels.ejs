@@ -28,7 +28,7 @@
       <% channels.forEach((ch) => { %>
         <a class="card" href="/play/<%= ch.id %>" data-cat="<%= ch.categoryId %>" data-name="<%= ch.name.toLowerCase() %>">
           <% if (ch.logo) { %>
-            <img loading="lazy" src="/logo?u=<%= encodeURIComponent(ch.logo) %>" alt="" onerror="this.style.visibility='hidden'">
+            <img loading="lazy" src="/logo?t=<%= ch.logo %>" alt="" onerror="this.style.visibility='hidden'">
           <% } else { %><div class="no-logo">TV</div><% } %>
           <span><%= ch.name %></span>
         </a>

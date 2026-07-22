@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 

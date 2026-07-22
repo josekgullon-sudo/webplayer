@@ -1,6 +1,7 @@
 const express = require('express');
 const { requireLogin } = require('../middleware/auth');
 const playlist = require('../services/playlist');
+const { seal } = require('../services/hlsProxy');
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get('/', requireLogin, async (req, res) => {
   const channels = index.channels.map((c) => ({
     id: c.id,
     name: c.name,
-    logo: c.logo,
+    logo: c.logo ? seal(c.logo) : '',
     categoryId: groupId.get(c.group),
   }));
   res.render('channels', { categories, channels, line, loadError: null });
