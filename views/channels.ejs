@@ -10,8 +10,8 @@
     <input type="search" id="search" placeholder="Buscar canal..." autocomplete="off">
     <div class="line-info">
       <span><%= line.username %></span>
-      <% if (line.expDate) { %>
-        <span class="muted">Caduca: <%= new Date(line.expDate).toLocaleDateString('es-ES') %></span>
+      <% if (line.channelCount) { %>
+        <span class="muted"><%= line.channelCount %> canales</span>
       <% } %>
       <form method="post" action="/logout"><button class="ghost">Salir</button></form>
     </div>

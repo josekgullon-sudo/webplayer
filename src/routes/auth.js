@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const xtream = require('../services/xtream');
+const playlist = require('../services/playlist');
 
 const router = express.Router();
 
@@ -23,27 +23,19 @@ router.post('/login', loginLimiter, async (req, res) => {
   if (!username || !password) {
     return res.status(400).render('login', { error: 'Introduce usuario y contraseña.' });
   }
-  let result;
-  try {
-    result = await xtream.authenticate(username, password);
-  } catch (err) {
-    console.error('Error contactando con el panel:', err.message);
-    return res.status(502).render('login', { error: 'Servicio no disponible. Inténtalo más tarde.' });
-  }
+  const result = await playlist.authenticate(username, password);
   if (!result.ok) {
-    const msg = result.reason === 'credenciales'
-      ? 'Usuario o contraseña incorrectos.'
-      : 'Tu línea no está activa. Contacta con tu proveedor.';
-    return res.status(401).render('login', { error: msg });
+    if (result.reason === 'panel') {
+      console.error('Error contactando con el panel:', result.message);
+      return res.status(502).render('login', { error: 'Servicio no disponible. Inténtalo más tarde.' });
+    }
+    return res.status(401).render('login', {
+      error: 'Usuario o contraseña incorrectos, o tu línea no tiene canales.',
+    });
   }
   req.session.regenerate((err) => {
     if (err) return res.status(500).render('login', { error: 'Error interno. Inténtalo de nuevo.' });
-    req.session.line = {
-      username,
-      password,
-      expDate: result.expDate ? result.expDate.toISOString() : null,
-      maxConnections: result.maxConnections,
-    };
+    req.session.line = { username, password, channelCount: result.channelCount };
     res.redirect('/');
   });
 });

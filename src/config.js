@@ -9,6 +9,6 @@ function required(name) {
 module.exports = {
   port: parseInt(process.env.PORT || '4000', 10),
   sessionSecret: required('SESSION_SECRET'),
-  xtreamBaseUrl: required('XTREAM_BASE_URL').replace(/\/+$/, ''),
+  playlistBaseUrl: required('PLAYLIST_BASE_URL').replace(/\/+$/, ''),
   cacheTtlMs: parseInt(process.env.CACHE_TTL_MS || '300000', 10),
 };

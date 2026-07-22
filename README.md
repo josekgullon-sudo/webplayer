@@ -15,7 +15,7 @@ git clone <repo> /opt/iptv-webplayer
 cd /opt/iptv-webplayer
 npm install
 cp .env.example .env
-# editar .env: XTREAM_BASE_URL, SESSION_SECRET, PORT
+# editar .env: PLAYLIST_BASE_URL, SESSION_SECRET, PORT
 npm start
 ```
 
@@ -35,7 +35,7 @@ npm test      # tests
 
 ## Notas
 
-- No hay base de datos de usuarios: la autenticación es contra `player_api.php`
-  del panel. SQLite solo almacena sesiones (`data/sessions.db`).
+- No hay base de datos de usuarios: la autenticación se valida descargando
+  la lista M3U de la línea. SQLite solo almacena sesiones (`data/sessions.db`).
 - El vídeo pasa por el proxy del backend: la URL del panel nunca se expone al
   navegador. Se recomienda desplegar en el mismo servidor que el panel.
