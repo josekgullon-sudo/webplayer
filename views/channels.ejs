@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <%- include('partials/head') %>
+  <title>Canales — Web Player</title>
+</head>
+<body class="channels-page">
+  <header class="topbar">
+    <h1>Canales</h1>
+    <input type="search" id="search" placeholder="Buscar canal..." autocomplete="off">
+    <div class="line-info">
+      <span><%= line.username %></span>
+      <% if (line.expDate) { %>
+        <span class="muted">Caduca: <%= new Date(line.expDate).toLocaleDateString('es-ES') %></span>
+      <% } %>
+      <form method="post" action="/logout"><button class="ghost">Salir</button></form>
+    </div>
+  </header>
+  <% if (loadError) { %><p class="error page-error"><%= loadError %></p><% } %>
+  <div class="layout">
+    <nav class="sidebar" id="sidebar">
+      <button class="cat active" data-cat="all">Todos</button>
+      <% categories.forEach((c) => { %>
+        <button class="cat" data-cat="<%= c.id %>"><%= c.name %> <span class="muted">(<%= c.count %>)</span></button>
+      <% }) %>
+    </nav>
+    <main class="grid" id="grid">
+      <% channels.forEach((ch) => { %>
+        <a class="card" href="/play/<%= ch.id %>" data-cat="<%= ch.categoryId %>" data-name="<%= ch.name.toLowerCase() %>">
+          <% if (ch.logo) { %>
+            <img loading="lazy" src="/logo?u=<%= encodeURIComponent(ch.logo) %>" alt="" onerror="this.style.visibility='hidden'">
+          <% } else { %><div class="no-logo">TV</div><% } %>
+          <span><%= ch.name %></span>
+        </a>
+      <% }) %>
+    </main>
+  </div>
+  <script src="/js/channels.js"></script>
+</body>
+</html>
