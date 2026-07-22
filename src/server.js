@@ -46,6 +46,16 @@ app.use((err, req, res, next) => {
 });
 
 if (require.main === module) {
+  // Red de seguridad: hacer de proxy de video en directo implica cortes y
+  // conexiones que mueren a mitad. Un fallo suelto nunca debe dejar sin
+  // servicio a todos los usuarios; se registra y el servidor sigue en pie.
+  process.on('uncaughtException', (err) => {
+    console.error('Excepcion no capturada:', err.message);
+  });
+  process.on('unhandledRejection', (err) => {
+    console.error('Promesa rechazada sin capturar:', err && err.message);
+  });
+
   app.listen(config.port, () => {
     console.log(`Web player IPTV escuchando en el puerto ${config.port}`);
   });

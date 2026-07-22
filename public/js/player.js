@@ -8,32 +8,39 @@ function showError() {
   errorBox.hidden = false;
 }
 
-function start() {
+function hideError() {
   errorBox.hidden = true;
+}
+
+function start() {
+  hideError();
   if (hls) {
     hls.destroy();
     hls = null;
+  }
+  // hls.js primero: en Chrome canPlayType puede decir "maybe" y no reproducir.
+  if (window.Hls && Hls.isSupported()) {
+    hls = new Hls({ manifestLoadingMaxRetry: 4, levelLoadingMaxRetry: 4, fragLoadingMaxRetry: 6 });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      if (!data.fatal) return;
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+      else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+      else showError();
+    });
+    return;
   }
   if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = src;
     video.play().catch(() => {});
     return;
   }
-  if (!window.Hls || !Hls.isSupported()) {
-    showError();
-    return;
-  }
-  hls = new Hls({ manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2 });
-  hls.loadSource(src);
-  hls.attachMedia(video);
-  hls.on(Hls.Events.ERROR, (event, data) => {
-    if (!data.fatal) return;
-    if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
-    else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
-    else showError();
-  });
+  showError();
 }
 
+// Si hay imagen, cualquier error anterior ya no aplica: el cartel debe irse.
+video.addEventListener('playing', hideError);
 video.addEventListener('error', () => {
   if (!hls) showError();
 });
