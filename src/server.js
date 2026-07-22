@@ -14,6 +14,14 @@ app.set('views', path.join(__dirname, '..', 'views'));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Version de los ficheros estaticos: cambia en cada arranque, asi el navegador
+// nunca se queda con un CSS o JS viejo despues de actualizar.
+const ASSET_VERSION = Date.now().toString(36);
+app.use((req, res, next) => {
+  res.locals.v = ASSET_VERSION;
+  next();
+});
 app.get('/vendor/hls.min.js', (req, res) =>
   res.sendFile(require.resolve('hls.js/dist/hls.min.js')));
 
@@ -56,8 +64,14 @@ if (require.main === module) {
     console.error('Promesa rechazada sin capturar:', err && err.message);
   });
 
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(`Web player IPTV escuchando en el puerto ${config.port}`);
+  });
+  // Un fallo al abrir el puerto si que es fatal: mejor salir y que systemd
+  // reintente, en vez de quedarse vivo sin atender a nadie.
+  server.on('error', (err) => {
+    console.error(`No se pudo abrir el puerto ${config.port}: ${err.message}`);
+    process.exit(1);
   });
 }
 

@@ -4,12 +4,19 @@ const retryBtn = document.getElementById('retry');
 const src = video.dataset.src;
 let hls = null;
 
-function showError() {
-  errorBox.hidden = false;
+function reproduciendo() {
+  return !video.paused && !video.ended && video.readyState >= 3;
 }
 
 function hideError() {
   errorBox.hidden = true;
+}
+
+// Nunca tapar un canal que se esta viendo: hls.js emite errores puntuales
+// (un segmento que falla, un cambio de nivel) mientras la imagen sigue fina.
+function showError() {
+  if (reproduciendo()) return;
+  errorBox.hidden = false;
 }
 
 function start() {
@@ -18,7 +25,7 @@ function start() {
     hls.destroy();
     hls = null;
   }
-  // hls.js primero: en Chrome canPlayType puede decir "maybe" y no reproducir.
+  // hls.js primero: en Chrome canPlayType puede decir "maybe" y luego no reproducir.
   if (window.Hls && Hls.isSupported()) {
     hls = new Hls({ manifestLoadingMaxRetry: 4, levelLoadingMaxRetry: 4, fragLoadingMaxRetry: 6 });
     hls.loadSource(src);
@@ -39,7 +46,10 @@ function start() {
   showError();
 }
 
-// Si hay imagen, cualquier error anterior ya no aplica: el cartel debe irse.
+// Mientras el tiempo avance hay imagen, asi que fuera cualquier aviso anterior.
+video.addEventListener('timeupdate', () => {
+  if (!errorBox.hidden && reproduciendo()) hideError();
+});
 video.addEventListener('playing', hideError);
 video.addEventListener('error', () => {
   if (!hls) showError();
