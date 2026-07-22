@@ -13,7 +13,9 @@ test('config lee variables y normaliza la URL base', () => {
 });
 
 test('config falla si falta XTREAM_BASE_URL', () => {
-  delete process.env.XTREAM_BASE_URL;
+  // Cadena vacia en vez de delete: dotenv no pisa variables ya definidas,
+  // asi el test no depende de si existe un .env local.
+  process.env.XTREAM_BASE_URL = '';
   process.env.SESSION_SECRET = 'secreto';
   delete require.cache[require.resolve('../src/config')];
   assert.throws(() => require('../src/config'), /XTREAM_BASE_URL/);

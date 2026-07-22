@@ -28,6 +28,8 @@ app.use(session({
 app.use(authRoutes);
 const channelRoutes = require('./routes/channels');
 app.use(channelRoutes);
+const streamRoutes = require('./routes/stream');
+app.use(streamRoutes);
 
 app.use((req, res) => res.status(404).send('No encontrado'));
 app.use((err, req, res, next) => {
