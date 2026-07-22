@@ -1,0 +1,14 @@
+[Unit]
+Description=Web player IPTV
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/iptv-webplayer
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+EnvironmentFile=/opt/iptv-webplayer/.env
+
+[Install]
+WantedBy=multi-user.target
