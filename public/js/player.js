@@ -46,7 +46,15 @@ function start() {
   showError();
 }
 
-// Mientras el tiempo avance hay imagen, asi que fuera cualquier aviso anterior.
+// Vigilante: si el tiempo avanza es que hay imagen, se quite como se quite el
+// aviso. No depende de ningun evento, asi que no puede quedarse pegado.
+let ultimoTiempo = -1;
+setInterval(() => {
+  const avanza = video.currentTime > ultimoTiempo;
+  ultimoTiempo = video.currentTime;
+  if (avanza && !errorBox.hidden) hideError();
+}, 1000);
+
 video.addEventListener('timeupdate', () => {
   if (!errorBox.hidden && reproduciendo()) hideError();
 });
