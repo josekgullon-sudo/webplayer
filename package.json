@@ -1,0 +1,28 @@
+{
+  "name": "iptv-webplayer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web player IPTV conectado a un panel Xtream UI/XUI",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "better-sqlite3-session-store": "^0.1.0",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^4.22.2",
+    "express-rate-limit": "^8.6.0",
+    "express-session": "^1.19.0",
+    "hls.js": "^1.6.16"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.2.0": true
+  }
+}
