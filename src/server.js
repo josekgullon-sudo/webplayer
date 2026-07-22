@@ -30,6 +30,8 @@ const channelRoutes = require('./routes/channels');
 app.use(channelRoutes);
 const streamRoutes = require('./routes/stream');
 app.use(streamRoutes);
+const playerRoutes = require('./routes/player');
+app.use(playerRoutes);
 
 app.use((req, res) => res.status(404).send('No encontrado'));
 app.use((err, req, res, next) => {
