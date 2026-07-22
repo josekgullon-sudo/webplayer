@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <%- include('partials/head') %>
+  <title>Acceso — Web Player</title>
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <h1>Web Player</h1>
+    <p class="subtitle">Entra con tu usuario de IPTV</p>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <form method="post" action="/login">
+      <label>Usuario
+        <input type="text" name="username" required autocomplete="username" autofocus>
+      </label>
+      <label>Contraseña
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+      <button type="submit">Entrar</button>
+    </form>
+  </main>
+</body>
+</html>
