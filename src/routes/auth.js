@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const playlist = require('../services/playlist');
+const { seal } = require('../services/secretbox');
 
 const router = express.Router();
 
@@ -35,7 +36,12 @@ router.post('/login', loginLimiter, async (req, res) => {
   }
   req.session.regenerate((err) => {
     if (err) return res.status(500).render('login', { error: 'Error interno. Inténtalo de nuevo.' });
-    req.session.line = { username, password, channelCount: result.channelCount };
+    // La contrasena se guarda cifrada: la base de sesiones nunca la tiene en claro.
+    req.session.line = {
+      username,
+      password: seal(password),
+      channelCount: result.channelCount,
+    };
     res.redirect('/');
   });
 });

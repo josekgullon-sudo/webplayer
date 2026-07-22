@@ -1,8 +1,9 @@
 const { Readable } = require('node:stream');
 const express = require('express');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin, lineCredentials } = require('../middleware/auth');
 const playlist = require('../services/playlist');
-const { rewritePlaylist, unseal } = require('../services/hlsProxy');
+const { rewritePlaylist } = require('../services/hlsProxy');
+const { unseal } = require('../services/secretbox');
 
 const router = express.Router();
 const FETCH_TIMEOUT_MS = 15000;
@@ -10,7 +11,7 @@ const FETCH_TIMEOUT_MS = 15000;
 router.get('/stream/:id.m3u8', requireLogin, async (req, res) => {
   let index;
   try {
-    index = await playlist.load(req.session.line);
+    index = await playlist.load(lineCredentials(req.session.line));
   } catch (err) {
     console.error('Error cargando lista:', err.message);
     return res.status(502).send('Servicio no disponible');

@@ -10,5 +10,7 @@ module.exports = {
   port: parseInt(process.env.PORT || '4000', 10),
   sessionSecret: required('SESSION_SECRET'),
   playlistBaseUrl: required('PLAYLIST_BASE_URL').replace(/\/+$/, ''),
+  // Con HTTPS delante (nginx), la cookie de sesion no debe viajar nunca en claro.
+  cookieSecure: process.env.COOKIE_SECURE === 'true',
   cacheTtlMs: parseInt(process.env.CACHE_TTL_MS || '300000', 10),
 };

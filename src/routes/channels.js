@@ -1,7 +1,7 @@
 const express = require('express');
-const { requireLogin } = require('../middleware/auth');
+const { requireLogin, lineCredentials } = require('../middleware/auth');
 const playlist = require('../services/playlist');
-const { seal } = require('../services/hlsProxy');
+const { seal } = require('../services/secretbox');
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get('/', requireLogin, async (req, res) => {
   const line = req.session.line;
   let index;
   try {
-    index = await playlist.load(line);
+    index = await playlist.load(lineCredentials(line));
   } catch (err) {
     console.error('Error cargando canales:', err.message);
     return res.status(502).render('channels', {
