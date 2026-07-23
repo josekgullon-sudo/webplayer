@@ -1,4 +1,4 @@
-# Web Player IPTV
+# Totalflix — Web Player IPTV
 
 Web player para líneas de un panel Xtream UI / XUI. Los usuarios entran con el
 usuario y contraseña de su línea y ven sus canales en vivo en el navegador.

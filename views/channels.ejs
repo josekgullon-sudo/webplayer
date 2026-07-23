@@ -2,39 +2,57 @@
 <html lang="es">
 <head>
   <%- include('partials/head') %>
-  <title>Canales — Web Player</title>
+  <title>Canales — Totalflix</title>
 </head>
 <body class="channels-page">
   <header class="topbar">
-    <h1>Canales</h1>
-    <input type="search" id="search" placeholder="Buscar canal..." autocomplete="off">
-    <div class="line-info">
-      <span><%= line.username %></span>
-      <% if (line.channelCount) { %>
-        <span class="muted"><%= line.channelCount %> canales</span>
-      <% } %>
-      <form method="post" action="/logout"><button class="ghost">Salir</button></form>
+    <a class="brand" href="/" aria-label="Totalflix — inicio"><%- include('partials/logo') %></a>
+    <div class="search">
+      <input type="search" id="search" placeholder="Buscar canal…" autocomplete="off" aria-label="Buscar canal">
+    </div>
+    <div class="spacer"></div>
+    <div class="session">
+      <span class="who">
+        <b><%= line.username %></b>
+        <% if (line.channelCount) { %><small><%= line.channelCount %> canales</small><% } %>
+      </span>
+      <form method="post" action="/logout"><button class="btn-ghost" type="submit">Salir</button></form>
     </div>
   </header>
-  <% if (loadError) { %><p class="error page-error"><%= loadError %></p><% } %>
+
+  <% if (loadError) { %><div style="padding:18px 20px 0"><p class="page-note"><%= loadError %></p></div><% } %>
+
   <div class="layout">
-    <nav class="sidebar" id="sidebar">
-      <button class="cat active" data-cat="all">Todos</button>
+    <nav class="rail" aria-label="Categorías">
+      <div class="eyebrow">Categorías</div>
+      <button class="cat active" data-cat="all">Todos <span class="n"><%= channels.length %></span></button>
       <% categories.forEach((c) => { %>
-        <button class="cat" data-cat="<%= c.id %>"><%= c.name %> <span class="muted">(<%= c.count %>)</span></button>
+        <button class="cat" data-cat="<%= c.id %>"><span><%= c.name %></span> <span class="n"><%= c.count %></span></button>
       <% }) %>
     </nav>
-    <main class="grid" id="grid">
-      <% channels.forEach((ch) => { %>
-        <a class="card" href="/play/<%= ch.id %>" data-cat="<%= ch.categoryId %>" data-name="<%= ch.name.toLowerCase() %>">
-          <% if (ch.logo) { %>
-            <img loading="lazy" src="/logo?t=<%= ch.logo %>" alt="" onerror="this.style.visibility='hidden'">
-          <% } else { %><div class="no-logo">TV</div><% } %>
-          <span><%= ch.name %></span>
-        </a>
-      <% }) %>
+
+    <main class="main">
+      <div class="main-head">
+        <h2 id="cat-title">Todos los canales</h2>
+        <span class="count" id="cat-count"><%= channels.length %> en directo</span>
+      </div>
+      <div class="grid" id="grid">
+        <% channels.forEach((ch) => { %>
+          <a class="card" href="/play/<%= ch.id %>" data-cat="<%= ch.categoryId %>" data-name="<%= ch.name.toLowerCase() %>">
+            <span class="tag">Live</span>
+            <span class="thumb">
+              <% if (ch.logo) { %>
+                <img loading="lazy" src="/logo?t=<%= ch.logo %>" alt="" onerror="this.remove()">
+              <% } else { %><span class="ph">TV</span><% } %>
+            </span>
+            <span class="name"><%= ch.name %></span>
+          </a>
+        <% }) %>
+      </div>
+      <div class="empty" id="empty" hidden>Sin resultados para <b id="empty-term"></b>.</div>
     </main>
   </div>
+
   <script src="/js/channels.js?v=<%= v %>"></script>
 </body>
 </html>

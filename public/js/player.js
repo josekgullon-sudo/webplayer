@@ -91,6 +91,20 @@ function apagar() {
 }
 window.addEventListener('pagehide', apagar);
 
+// Zapeo con teclado: flechas arriba/abajo para el canal anterior/siguiente.
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input, textarea')) return;
+  if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+  const items = Array.from(document.querySelectorAll('.zap-item'));
+  const actual = items.findIndex((el) => el.classList.contains('current'));
+  if (actual === -1) return;
+  const destino = e.key === 'ArrowDown' ? items[actual + 1] : items[actual - 1];
+  if (destino) {
+    e.preventDefault();
+    window.location.href = destino.getAttribute('href');
+  }
+});
+
 // Si el navegador restaura esta pagina desde memoria (boton atras), recargar
 // limpio en vez de reanudar un reproductor a medio apagar.
 window.addEventListener('pageshow', (e) => {

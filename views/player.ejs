@@ -2,23 +2,33 @@
 <html lang="es">
 <head>
   <%- include('partials/head') %>
-  <title><%= channel.name %> — Web Player</title>
+  <title><%= channel.name %> — Totalflix</title>
 </head>
 <body class="player-page">
   <header class="topbar">
     <a class="back" href="/">&larr; Canales</a>
-    <h1><%= channel.name %></h1>
+    <div class="now">
+      <span class="live">En directo</span>
+      <h1><%= channel.name %></h1>
+    </div>
   </header>
-  <div class="player-layout">
+
+  <div class="stage">
     <main class="video-wrap">
       <video id="video" data-src="/stream/<%= channel.id %>.m3u8" controls autoplay playsinline></video>
     </main>
-    <aside class="zap-list">
-      <% siblings.forEach((s) => { %>
-        <a class="zap <%= String(s.id) === String(channel.id) ? 'current' : '' %>" href="/play/<%= s.id %>"><%= s.name %></a>
+    <aside class="zap" aria-label="Otros canales">
+      <div class="eyebrow"><%= siblings.length %> canales</div>
+      <% siblings.forEach((s, i) => { %>
+        <a class="zap-item <%= String(s.id) === String(channel.id) ? 'current' : '' %>" href="/play/<%= s.id %>">
+          <span class="idx"><%= String(i + 1).padStart(2, '0') %></span>
+          <span class="t"><%= s.name %></span>
+          <% if (String(s.id) === String(channel.id)) { %><span class="live">·</span><% } %>
+        </a>
       <% }) %>
     </aside>
   </div>
+
   <script src="/vendor/hls.min.js"></script>
   <script src="/js/player.js?v=<%= v %>"></script>
 </body>
