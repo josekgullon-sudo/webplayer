@@ -39,7 +39,6 @@
       <div class="grid" id="grid">
         <% channels.forEach((ch) => { %>
           <a class="card" href="/play/<%= ch.id %>" data-cat="<%= ch.categoryId %>" data-name="<%= ch.name.toLowerCase() %>">
-            <span class="tag">Live</span>
             <span class="thumb">
               <% if (ch.logo) { %>
                 <img loading="lazy" src="/logo?t=<%= ch.logo %>" alt="" onerror="this.remove()">

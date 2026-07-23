@@ -8,7 +8,6 @@
   <header class="topbar">
     <a class="back" href="/">&larr; Canales</a>
     <div class="now">
-      <span class="live">En directo</span>
       <h1><%= channel.name %></h1>
     </div>
   </header>
@@ -23,7 +22,6 @@
         <a class="zap-item <%= String(s.id) === String(channel.id) ? 'current' : '' %>" href="/play/<%= s.id %>">
           <span class="idx"><%= String(i + 1).padStart(2, '0') %></span>
           <span class="t"><%= s.name %></span>
-          <% if (String(s.id) === String(channel.id)) { %><span class="live">·</span><% } %>
         </a>
       <% }) %>
     </aside>

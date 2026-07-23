@@ -27,6 +27,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html, body { height: 100%; }
 
@@ -369,28 +370,6 @@ button { cursor: pointer; border: 0; background: none; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.card .tag {
-  position: absolute;
-  top: 10px; right: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: rgba(10, 14, 18, 0.72);
-  backdrop-filter: blur(4px);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  font-weight: 700;
-  color: var(--live);
-}
-.card .tag::before {
-  content: "";
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--live);
-}
-
 .empty {
   padding: 60px 20px;
   text-align: center;

@@ -46,7 +46,19 @@ function hostsOf(urls) {
   return hosts;
 }
 
-function buildIndex(channels) {
+function buildIndex(rawChannels) {
+  // Orden del panel: las categorias en su orden de aparicion, y dentro de cada
+  // una los canales en el orden de la lista. Se agrupan por si la lista los
+  // trajera entremezclados, para que "Todos" salga igual que en la IPTV.
+  const orden = new Map();
+  for (const ch of rawChannels) {
+    if (!orden.has(ch.group)) orden.set(ch.group, orden.size);
+  }
+  const channels = rawChannels
+    .map((ch, i) => ({ ch, i }))
+    .sort((a, b) => (orden.get(a.ch.group) - orden.get(b.ch.group)) || (a.i - b.i))
+    .map((x) => x.ch);
+
   const groups = [];
   const seen = new Map();
   for (const ch of channels) {
