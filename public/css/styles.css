@@ -137,15 +137,6 @@ button.ghost { background: var(--surface-2); }
   background: #000;
   display: block;
 }
-.player-error {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  gap: 10px;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.7);
-}
 .zap-list {
   width: 260px;
   flex-shrink: 0;

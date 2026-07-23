@@ -12,10 +12,6 @@
   <div class="player-layout">
     <main class="video-wrap">
       <video id="video" data-src="/stream/<%= channel.id %>.m3u8" controls autoplay playsinline></video>
-      <div id="player-error" class="player-error" hidden>
-        <p>No se pudo cargar el canal.</p>
-        <button id="retry">Reintentar</button>
-      </div>
     </main>
     <aside class="zap-list">
       <% siblings.forEach((s) => { %>
