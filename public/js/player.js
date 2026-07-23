@@ -59,7 +59,7 @@ function arrancar() {
 // Vigilante: si el video se queda parado, vuelve al directo y recarga solo.
 let ultimoTiempo = -1;
 let segundosParado = 0;
-setInterval(() => {
+const vigilante = setInterval(() => {
   const avanza = video.currentTime > ultimoTiempo + 0.1;
   ultimoTiempo = video.currentTime;
   if (avanza || video.paused) {
@@ -75,5 +75,26 @@ setInterval(() => {
     arrancar();
   }
 }, 1000);
+
+// Al salir de la pagina (cambiar de canal, volver al menu, cerrar) hay que
+// apagar el reproductor. Si no, el navegador conserva la pagina en memoria y
+// su audio sigue sonando por detras encima del canal siguiente.
+function apagar() {
+  clearInterval(vigilante);
+  if (hls) {
+    hls.destroy();
+    hls = null;
+  }
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+}
+window.addEventListener('pagehide', apagar);
+
+// Si el navegador restaura esta pagina desde memoria (boton atras), recargar
+// limpio en vez de reanudar un reproductor a medio apagar.
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) location.reload();
+});
 
 arrancar();
